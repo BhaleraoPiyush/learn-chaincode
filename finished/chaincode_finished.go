@@ -119,6 +119,7 @@ func (t *StudentManagementChaincode) insert_student(stub shim.ChaincodeStubInter
 		return nil, errors.New("Failed inserting row.")
 	}
 
+fmt.Println("Succesfully added student");
 	
 return nil, nil
 	
@@ -132,6 +133,7 @@ func (t *StudentManagementChaincode) read_data(stub shim.ChaincodeStubInterface 
 		return nil, errors.New("Wrong args..plz check")
 
 	}
+	
 
 RollNumber := args[0]
 
@@ -139,6 +141,13 @@ RollNumber := args[0]
 	col1 := shim.Column{Value: &shim.Column_String_{String_: RollNumber}}
 	columns = append(columns, col1)
 
+var err error
+	row, err := stub.GetRow("AssetsOwnership", columns)
+
+	if(err != nil){
+		return nil, errors.New("Failed inserting row.")
+	}
+	fmt.Println("Details are",row)
 
 	
 	return nil, nil
