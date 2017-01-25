@@ -142,15 +142,16 @@ RollNumber := args[0]
 	columns = append(columns, col1)
 
 var err error
-	row, err := stub.GetRow("AssetsOwnership", columns)
+	row, err := stub.GetRow("StudentData", columns)
 
 	if(err != nil){
 		return nil, errors.New("Failed inserting row.")
 	}
 	fmt.Println("Details are",row)
 
+	rowString := fmt.Sprintf("%s", row)
+	return []byte(rowString), nil
 	
-	return nil, nil
 
 
 }
