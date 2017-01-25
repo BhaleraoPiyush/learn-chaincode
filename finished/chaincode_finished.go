@@ -17,46 +17,63 @@ limitations under the License.
 package main
 
 import (
+	
 	"errors"
 	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/hyperledger/fabric/core/crypto/primitives"
+
 )
 
+
+
 // SimpleChaincode example simple Chaincode implementation
-type SimpleChaincode struct {
+type StudentManagementChaincode struct {
 }
 
+
 func main() {
-	err := shim.Start(new(SimpleChaincode))
+	primitives.SetSecurityLevel("SHA3", 256)
+	err := shim.Start(new(StudentManagementChaincode))
 	if err != nil {
-		fmt.Printf("Error starting Simple chaincode: %s", err)
+		fmt.Printf("Error starting AssetManagementChaincode: %s", err)
 	}
 }
 
 // Init resets all the things
-func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1")
+func (t *StudentManagementChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+	if len(args) != 0 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 0")
 	}
 
-	err := stub.PutState("hello_world", []byte(args[0]))
-	if err != nil {
-		return nil, err
+	// create student imformation table
+
+	err := stub.CreateTable("StudentData", []*shim.ColumnDefinition{
+		&shim.ColumnDefinition{Name: "RollNumber", Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name: "Name", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "Marks", Type: shim.ColumnDefinition_STRING, Key: false},
+	})
+
+	if err != nil{
+		return nil, errors.New("Unable to create student Data table")
 	}
+
 
 	return nil, nil
 }
 
 // Invoke isur entry point to invoke a chaincode function
-func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+func (t *StudentManagementChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
 	if function == "init" {
+		//Initialize the StudentData
 		return t.Init(stub, "init", args)
-	} else if function == "write" {
-		return t.write(stub, args)
+	} else if function == "insert_student" {
+		//insert new entry in StudentData
+		return t.insert_student(stub, "insert_student" , args)
 	}
 	fmt.Println("invoke did not find func: " + function)
 
@@ -64,52 +81,67 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 }
 
 // Query is our entry point for queries
-func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+func (t *StudentManagementChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("query is running " + function)
 
 	// Handle different functions
 	if function == "read" { //read a variable
-		return t.read(stub, args)
+		return t.read_data(stub ,"read_data",args)
 	}
 	fmt.Println("query did not find func: " + function)
 
 	return nil, errors.New("Received unknown function query: " + function)
 }
 
-// write - invoke function to write key/value pair
-func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	var key, value string
+//insert new student
+func (t *StudentManagementChaincode) insert_student(stub shim.ChaincodeStubInterface , function string ,args []string)([]byte,error) {
+
+	if len(args) != 3 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2")
+	}
+
 	var err error
-	fmt.Println("running write()")
 
-	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
+	RollNumber :=args[0]
+	Name := args[1]
+	Marks :=args[2]
+
+	_, err = stub.InsertRow(
+		"StudentData",
+		shim.Row{
+			Columns: []*shim.Column{
+				&shim.Column{Value: &shim.Column_String_{String_: RollNumber}},
+				&shim.Column{Value: &shim.Column_String_{String_: Name}},
+				&shim.Column{Value: &shim.Column_String_{String_: Marks}},
+			},
+	})
+		if err != nil {
+		return nil, errors.New("Failed inserting row.")
 	}
 
-	key = args[0] //rename for funsies
-	value = args[1]
-	err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
+	
+return nil, nil
+	
+
 }
 
-// read - query function to read key/value pair
-func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	var key, jsonResp string
-	var err error
+//reading StudentData
+func (t *StudentManagementChaincode) read_data(stub shim.ChaincodeStubInterface , function string ,args []string)([]byte,error) {
 
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
+	if(len(args) != 1){
+		return nil, errors.New("Wrong args..plz check")
+
 	}
 
-	key = args[0]
-	valAsbytes, err := stub.GetState(key)
-	if err != nil {
-		jsonResp = "{\"Error\":\"Failed to get state for " + key + "\"}"
-		return nil, errors.New(jsonResp)
-	}
+RollNumber := args[0]
 
-	return valAsbytes, nil
+	var columns []shim.Column
+	col1 := shim.Column{Value: &shim.Column_String_{String_: RollNumber}}
+	columns = append(columns, col1)
+
+
+	
+	return nil, nil
+
+
 }
