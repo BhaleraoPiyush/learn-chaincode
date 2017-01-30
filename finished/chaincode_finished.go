@@ -121,7 +121,9 @@ func (t *StudentManagementChaincode) insert_student(stub shim.ChaincodeStubInter
 
 fmt.Println("Succesfully added student");
 	
-return nil, nil
+msg := "Succesfully added student"
+sendMsg := fmt.Sprintf("%s",msg)
+return []byte(sendMsg), nil
 	
 
 }
@@ -151,6 +153,8 @@ var err error
 
 	rowString := fmt.Sprintf("%s", row)
 	return []byte(rowString), nil
+
+
 	
 
 
