@@ -74,6 +74,8 @@ func (t *StudentManagementChaincode) Invoke(stub shim.ChaincodeStubInterface, fu
 	} else if function == "insert_student" {
 		//insert new entry in StudentData
 		return t.insert_student(stub, "insert_student" , args)
+	} else if function == "delete_student"{
+		return t.delete_student(stub,"delete_student",args) 
 	}
 	fmt.Println("invoke did not find func: " + function)
 
@@ -158,4 +160,38 @@ var err error
 	
 
 
+}
+// delete particular student Entry from StudentData
+func (t *StudentManagementChaincode) delete_student(stub shim.ChaincodeStubInterface , function string ,args []string)([]byte,error) {
+
+	if(len(args)!=1){
+				return nil,errors.New("Wrong arguments")
+	}
+	delete_number := args[0]
+
+	var columns [] shim.Column
+	col1 := shim.Column{Value : &shim.Column_String_{String_:delete_number}}
+	columns = append(columns,col1)
+
+	var err error
+
+	 row,err := stub.GetRow("StudentData",columns)
+	if(err != nil){
+			return nil,errors.New("RollNumber doenNot exists")
+	}
+	
+	err = stub.DeleteRow(
+		"StudentData",
+		[]shim.Column{shim.Column{Value: &shim.Column_String_{String_: delete_number}}},
+	)
+
+	if(err !=nil){
+		return nil,errors.New("Wrong Details")
+
+	}
+
+	Srow :=fmt.Sprintf("%s",row)
+
+
+	return []byte(Srow),nil
 }
