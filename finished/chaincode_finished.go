@@ -17,7 +17,7 @@ limitations under the License.
 package main
 
 import (
-	
+
 	"errors"
 	"fmt"
 
@@ -31,6 +31,7 @@ import (
 // SimpleChaincode example simple Chaincode implementation
 type StudentManagementChaincode struct {
 }
+
 
 
 func main() {
@@ -75,7 +76,7 @@ func (t *StudentManagementChaincode) Invoke(stub shim.ChaincodeStubInterface, fu
 		//insert new entry in StudentData
 		return t.insert_student(stub, "insert_student" , args)
 	} else if function == "delete_student"{
-		return t.delete_student(stub,"delete_student",args) 
+		return t.delete_student(stub,"delete_student",args)
 	}
 	fmt.Println("invoke did not find func: " + function)
 
@@ -122,11 +123,11 @@ func (t *StudentManagementChaincode) insert_student(stub shim.ChaincodeStubInter
 	}
 
 fmt.Println("Succesfully added student");
-	
+
 msg := "Succesfully added student"
 sendMsg := fmt.Sprintf("%s",msg)
 return []byte(sendMsg), nil
-	
+
 
 }
 
@@ -137,7 +138,7 @@ func (t *StudentManagementChaincode) read_data(stub shim.ChaincodeStubInterface 
 		return nil, errors.New("Wrong args..plz check")
 
 	}
-	
+
 
 RollNumber := args[0]
 
@@ -157,7 +158,7 @@ var err error
 	return []byte(rowString), nil
 
 
-	
+
 
 
 }
@@ -179,7 +180,7 @@ func (t *StudentManagementChaincode) delete_student(stub shim.ChaincodeStubInter
 	if(err != nil){
 			return nil,errors.New("RollNumber doenNot exists")
 	}
-	
+
 	err = stub.DeleteRow(
 		"StudentData",
 		[]shim.Column{shim.Column{Value: &shim.Column_String_{String_: delete_number}}},
