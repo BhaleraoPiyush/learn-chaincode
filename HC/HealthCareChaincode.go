@@ -35,6 +35,7 @@ func main()  {
 
 //Init function : Table-Creaction
 func (t *HealthCareChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string)([]byte, error){
+fmt.Println("In Init function ")
   var err error
 
   if(len(args)!=0){
@@ -76,20 +77,33 @@ if err != nil {
   }
 
 stub.PutState("admin",adminCert)
-
-
-
-
-
-
 return nil,nil;
 }
 
 
 func(t *HealthCareChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string)([]byte, error) {
+  fmt.Println("In Invoke func")
+
+  if function =="init" {
+    return t.Init(stub,"init",args)
+  }else if(function=="AssignPoints"){
+    return t.AssignPoints(stub,"AssignPoints",args)
+  }else if(function=="RedeemPoints"){
+    return t.RedeemPoints(stub,"RedeemPoints",args)
+  }
+
+
 return nil,nil;
 
 }
 func (t *HealthCareChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error)  {
-return nil,nil;
+return nil,nil
+}
+
+func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , function string, args []string)([]byte,error)  {
+return nil,nil
+}
+
+func (t *HealthCareChaincode) RedeemPoints(stub shim.ChaincodeStubInterface , function string, args []string)([]byte,error)  {
+return nil,nil
 }
