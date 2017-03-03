@@ -4,7 +4,7 @@ import (
 
     "errors"
     "fmt"
-
+    "encoding/json"
     "github.com/hyperledger/fabric/core/chaincode/shim"
 	  "github.com/hyperledger/fabric/core/crypto/primitives"
 
@@ -42,7 +42,7 @@ fmt.Println("In Init function ")
     return nil , errors.New("Incorrect number of arguments..Want 0 arguments");
   }
 
-//  res := RewardPoint{}
+  //res := RewardPoint{}
 
   // err = stub.PutState("UserID",res)
   // if err != nil {
@@ -101,9 +101,52 @@ return nil,nil
 }
 
 func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , function string, args []string)([]byte,error)  {
-return nil,nil
+
+    var err error
+
+    if len(args) !=3 {
+          return nil,errors.New("Incorrect numbers of arguments")
+    }
+
+
+   name := args[0]
+   value, err := stub.GetState(name)
+
+   if(err !=nil){
+      return  t.init_eReward(stub,"eReward",args)
+   }else{
+
+     var inputPoints = args[1]
+     var inputAssigner = args[2]
+
+     res := RewardPoint{}
+     json.Unmarshal(value , &res)
+
+
+     res.Points = (res.Points + inputPoints)
+     res.SignatureAssigner = inputAssigner
+
+     jsonAsBytes, _ := json.Marshal(res)
+     err = stub.PutState(name , jsonAsBytes)
+
+     if err != nil {
+       return nil, err
+     }
+   }
+   successMsg := fmt.Sprintf("%s",value)
+return []byte(successMsg),nil
 }
 
 func (t *HealthCareChaincode) RedeemPoints(stub shim.ChaincodeStubInterface , function string, args []string)([]byte,error)  {
 return nil,nil
+}
+
+func (t *HealthCareChaincode) init_eReward(stub shim.ChaincodeStubInterface,function string, args []string)([]byte,error) {
+
+  if len(args) != 2 {
+    return nil,errors.New("Incorrect number of arguments")
+  }
+
+  return nil,nil;
+
 }
