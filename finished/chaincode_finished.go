@@ -162,7 +162,8 @@ func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , fu
 
 		 addition = (inputPoints + storedPoints)
 
-     res.Points = strconv.Itoa(addition)
+		 var result =  strconv.Itoa(addition)
+     res.Points = result
      res.SignatureAssigner = inputAssigner
 
      jsonAsBytes, _ := json.Marshal(res)
