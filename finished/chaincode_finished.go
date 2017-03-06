@@ -168,9 +168,22 @@ return nil,nil
 
 func (t *HealthCareChaincode) init_eReward(stub shim.ChaincodeStubInterface,function string, args []string)([]byte,error) {
 
-  if len(args) != 2 {
+  if len(args) != 3 {
     return nil,errors.New("Incorrect number of arguments")
+
   }
+	var err error
+	var userId = args[0]
+	var inputPoints = args[1]
+	var SignatureAssigner = args[2]
+	var hash =""
+	var Tx_ID =""
+
+	str :=`{"Points" :"`+ inputPoints +`","Hash":"`+hash+`","SignatureAssigner":"`+SignatureAssigner+`","Tx_ID":"`+Tx_ID+`"}`
+	err = stub.PutState(userId,[]byte(str))
+	if err !=nil{
+		return nil,err
+	}
 
   return nil,nil;
 
