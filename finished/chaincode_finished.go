@@ -154,7 +154,7 @@ func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , fu
      res := RewardPoint{}
      json.Unmarshal(value , &res)
 
-		storedPoints, err = strconv.Atoi(string(res.Points))
+		storedPoints, err = strconv.Atoi(res.Points)
 
 		 if err != nil {
 			 				return nil, errors.New("Expecting integer value ")
@@ -178,7 +178,52 @@ return []byte(successMsg),nil
 }
 
 func (t *HealthCareChaincode) RedeemPoints(stub shim.ChaincodeStubInterface , function string, args []string)([]byte,error)  {
-return nil,nil
+	var err error
+
+	var inputPoints, storedPoints, addition int
+
+	if len(args) !=3 {
+				return nil,errors.New("Incorrect numbers of arguments")
+	}
+
+
+ name := args[0]
+ value, err := stub.GetState(name)
+
+ if(err !=nil){
+		return  t.init_eReward(stub,"eReward",args)
+ }else{
+
+inputPoints, err = strconv.Atoi(args[1])
+	 if err != nil {
+						return nil, errors.New("Expecting integer value for asset holding")
+	}
+	 var inputAssigner = args[2]
+
+	 res := RewardPoint{}
+	 json.Unmarshal(value , &res)
+
+	storedPoints, err = strconv.Atoi(string(res.Points))
+
+	 if err != nil {
+						return nil, errors.New("Expecting integer value ")
+	}
+
+	 addition = (inputPoints - storedPoints)
+
+	 var result =  strconv.Itoa(addition)
+	 res.Points = result
+	 res.SignatureAssigner = inputAssigner
+
+	 jsonAsBytes, _ := json.Marshal(res)
+	 err = stub.PutState(name , jsonAsBytes)
+
+	 if err != nil {
+		 return nil, err
+	 }
+ }
+ successMsg := fmt.Sprintf("%s",value)
+return []byte(successMsg),nil
 }
 
 func (t *HealthCareChaincode) init_eReward(stub shim.ChaincodeStubInterface,function string, args []string)([]byte,error) {
