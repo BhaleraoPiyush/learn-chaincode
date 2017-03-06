@@ -131,11 +131,12 @@ func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , fu
 
     var err error
 
-		var inputPoints, storedPoints, addition int
+		//var inputPoints, storedPoints, addition
 
     if len(args) !=3 {
           return nil,errors.New("Incorrect numbers of arguments")
     }
+
 
 
    name := args[0]
@@ -145,22 +146,22 @@ func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , fu
       return  t.init_eReward(stub,"eReward",args)
    }else{
 
- 	 	inputPoints, err = strconv.Atoi(args[1])
-		 if err != nil {
-			 				return nil, errors.New("Expecting integer value for asset holding")
-		}
+ 	 	inputPoints,_ := strconv.Atoi(args[1])
+		//  if err != nil {
+		// 	 				return nil, errors.New("Expecting integer value for asset holding")
+		// }
      var inputAssigner = args[2]
 
      res := RewardPoint{}
      json.Unmarshal(value , &res)
 
-		storedPoints, err = strconv.Atoi(res.Points)
+		storedPoints,_ := strconv.Atoi(res.Points)
+		//
+		//  if err != nil {
+		// 	 				return nil, errors.New("Expecting integer value ")
+		// }
 
-		 if err != nil {
-			 				return nil, errors.New("Expecting integer value ")
-		}
-
-		 addition = (inputPoints + storedPoints)
+		 addition := (inputPoints + storedPoints)
 
 		 var result =  strconv.Itoa(addition)
      res.Points = result
