@@ -131,7 +131,7 @@ func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , fu
 
     var err error
 
-		var inputPoints, storedPoints int
+		var inputPoints, storedPoints, addition int
 
     if len(args) !=3 {
           return nil,errors.New("Incorrect numbers of arguments")
@@ -154,12 +154,13 @@ func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , fu
      res := RewardPoint{}
      json.Unmarshal(value , &res)
 
-		storedPoints, err = strconv.Atoi(res.Points)
+		storedPoints, err = strconv.Atoi(string(res.Points))
+
 		 if err != nil {
 			 				return nil, errors.New("Expecting integer value ")
 		}
 
-		 var addition = inputPoints + storedPoints
+		 addition = (inputPoints + storedPoints)
 
      res.Points = strconv.Itoa(addition)
      res.SignatureAssigner = inputAssigner
