@@ -97,7 +97,32 @@ return nil,nil;
 
 }
 func (t *HealthCareChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error)  {
+  fmt.Println("Query function is running")
+
+  if function == "read"{
+    return t.read(stub ,"read",args)
+  }
+  fmt.Println("Error in Query"+ function)
 return nil,nil
+}
+
+func (t *HealthCareChaincode) read(stub shim.ChaincodeStubInterface, function string , args []string)([]byte ,error){
+  var name ,jsonResp string
+  var err error
+
+  if len(args) != 1{
+      return nil,errors.New("Incorrect number of arguments")
+  }
+  name = args[0]
+  valAsBytes, err :=stub.GetState(name)
+
+  if err != nil{
+    jsonResp ="{\"Error\":\"Failed to get state for "+ name + "\"}"
+    return nil,errors.New(jsonResp)
+  }
+
+  return valAsBytes , nil
+
 }
 
 func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , function string, args []string)([]byte,error)  {
