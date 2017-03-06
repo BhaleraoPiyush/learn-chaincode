@@ -8,6 +8,8 @@ import (
     "github.com/hyperledger/fabric/core/chaincode/shim"
 	  "github.com/hyperledger/fabric/core/crypto/primitives"
 
+		"strconv"
+
 )
 
 //structure for HealthCareChaincode implementation
@@ -129,6 +131,8 @@ func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , fu
 
     var err error
 
+		var inputPoints, storedPoints int
+
     if len(args) !=3 {
           return nil,errors.New("Incorrect numbers of arguments")
     }
@@ -141,14 +145,23 @@ func (t *HealthCareChaincode) AssignPoints(stub shim.ChaincodeStubInterface , fu
       return  t.init_eReward(stub,"eReward",args)
    }else{
 
-     var inputPoints = args[1]
+ inputPoints, err = strconv.Atoi(args[1])
+		 if err != nil {
+			 				return nil, errors.New("Expecting integer value for asset holding")
+		}
      var inputAssigner = args[2]
 
      res := RewardPoint{}
      json.Unmarshal(value , &res)
 
+		storedPoints, err = strconv.Atoi(res.Points)
+		 if err != nil {
+			 				return nil, errors.New("Expecting integer value ")
+		}
 
-     res.Points = (res.Points + inputPoints)
+		 var addition = inputPoints + storedPoints
+
+     res.Points = strconv.Itoa(addition)
      res.SignatureAssigner = inputAssigner
 
      jsonAsBytes, _ := json.Marshal(res)
