@@ -67,16 +67,16 @@ if err != nil {
 
 
   //Set adminCert
-  adminCert, err := stub.GetCallerMetadata()
-  if err!=nil{
-    return nil, errors.New("Not getting proper metadata")
-  }
-
-  if len(adminCert)== 0{
-    return nil,errors.New("Invalid Admin certificate:")
-  }
-
-stub.PutState("admin",adminCert)
+//   adminCert, err := stub.GetCallerMetadata()
+//   if err!=nil{
+//     return nil, errors.New("Not getting proper metadata")
+//   }
+//
+//   if len(adminCert)== 0{
+//     return nil,errors.New("Invalid Admin certificate:")
+//   }
+//
+// stub.PutState("admin",adminCert)
 return nil,nil;
 }
 
