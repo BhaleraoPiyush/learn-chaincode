@@ -212,7 +212,7 @@ inputPoints, _ := strconv.Atoi(args[1])
 	// 					return nil, errors.New("Expecting integer value ")
 	// }
 
-	 substraction := (inputPoints - storedPoints)
+	 substraction := (storedPoints - inputPoints)
 
 	 var result =  strconv.Itoa(substraction)
 	 res.Points = result
